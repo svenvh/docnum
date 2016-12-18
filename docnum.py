@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+# Copy a file and number the copy, as specified in a configuration file.
+
 import ConfigParser
 import datetime
 import os
+import shutil
 
 class Config:
     '''Configuration/state.'''
@@ -15,6 +18,10 @@ class Config:
     def get_prefix(self):
         '''Return prefix setting.'''
         return self.config.get('Settings', 'prefix')
+
+    def get_source(self):
+        '''Return source file setting.'''
+        return self.config.get('Settings', 'source')
 
     def get_next_id_and_inc(self):
         '''Return next ID and increment ID in config file.'''
@@ -38,7 +45,12 @@ def get_dest_filename(config):
 def main():
     '''Main entry point.'''
     config = Config()
-    print get_dest_filename(config)
+    src_file = config.get_source()
+    dst_file = get_dest_filename(config)
+    if os.path.exists(dst_file):
+        raise Exception('Destination file ' + dst_file + ' already exists!')
+    print src_file + ' -> ' + dst_file
+    shutil.copyfile(src_file, dst_file)
 
 if __name__ == "__main__":
     main()
